@@ -7,7 +7,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - run: docker build . --file Dockerfile --tag asheer/node-uat-testing:latest
+      - run: docker build . --file Dockerfile.dev --tag asheer/node-uat-testing:latest
       - run: docker run -e CI=true  asheer/node-uat-testing:latest npm run test -- --coverage
       - name: Generate deployment package
         run: zip -r deploy.zip . -x '*.git*'

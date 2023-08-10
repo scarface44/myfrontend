@@ -8,8 +8,8 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
-    - run: docker build . -t asheer/node-uat-testing --file Dockerfile.dev 
-    - run: docker run -e CI=true  asheer/node-uat-testing npm test 
+    - run: docker build . --file Dockerfile.dev --tag asheer/node-uat-testing:$(date +%s)
+    - run: docker run -e CI=true  asheer/node-uat-testing:$(date +%s) npm test 
 
     - name: Log in to Docker Hub
       uses: docker/login-action@v1

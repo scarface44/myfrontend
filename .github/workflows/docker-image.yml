@@ -9,7 +9,7 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - run: docker build . --file Dockerfile.dev --tag asheer/node-uat-testing:latest
-    - run: docker run -e CI=true  asheer/node-uat-testing:latest npm test 
+    - run: docker run -e CI=true  asheer/node-uat-testing:latest npm run test -- --coverage
 
     - name: Log in to Docker Hub
       uses: docker/login-action@v1

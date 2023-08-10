@@ -1,4 +1,4 @@
-name: Docker Image CI
+name: "PR build and test"
 
 on: [push]
 
@@ -11,10 +11,10 @@ jobs:
     - run: docker build . --file Dockerfile.dev --tag asheer/node-uat-testing:latest
     - run: docker run -e CI=true  asheer/node-uat-testing:latest npm test 
 
-    - name: Log in to Docker Hub
-      uses: docker/login-action@v1
-      with:
-        username: ${{ secrets.DOCKER_USERNAME }}
-        password: ${{ secrets.DOCKER_PASSWORD }}  
-    - name: Docker Push
-      run: docker push ${{secrets.DOCKER_USERNAME}}/node-uat-testing
+    # - name: Log in to Docker Hub
+    #   uses: docker/login-action@v1
+    #   with:
+    #     username: ${{ secrets.DOCKER_USERNAME }}
+    #     password: ${{ secrets.DOCKER_PASSWORD }}  
+    # - name: Docker Push
+    #   run: docker push ${{secrets.DOCKER_USERNAME}}/node-uat-testing

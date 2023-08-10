@@ -6,37 +6,22 @@ jobs:
   checkpr:
     runs-on: ubuntu-latest
     steps:
-<<<<<<< HEAD
-      - name: echo anything
-        run: echo "All is well, approve pr and merge to main"
-=======
-    - uses: actions/checkout@v3
-    - run: docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
-    - run: docker build . --file Dockerfile.dev --tag asheer/node-uat-testing:latest
-    - run: docker run -e CI=true  asheer/node-uat-testing:latest npm run test -- --coverage
+      - uses: actions/checkout@v3
+      - run: docker build . --file Dockerfile --tag asheer/node-uat-testing:latest
+      - run: docker run -e CI=true  asheer/node-uat-testing:latest npm run test -- --coverage
+      - name: Generate deployment package
+        run: zip -r deploy.zip . -x '*.git*'
 
-    - name: Log in to Docker Hub
-      uses: docker/login-action@v1
-      with:
-        username: ${{ secrets.DOCKER_USERNAME }}
-        password: ${{ secrets.DOCKER_PASSWORD }}  
-    - name: Generate deployment package
-      run: zip -r deploy.zip . -x '*.git*'
-    # - name: Docker Push
-    #   run: docker push ${{secrets.DOCKER_USERNAME}}/node-uat-testing
-
-
-    
-    - name: Deploy 2 EB
-      uses: einaregilsson/beanstalk-deploy@v18
-      with:
-        aws_access_key: ${{ secrets.AWS_ACCESS_KEY }}
-        aws_secret_key: ${{ secrets.AWS_SECRET_KEY }}
-        application_name: react-app
-        environment_name: React-app-env
-        existing_bucket_name: ${{ secrets.ASS3_BUCKET }}
-        region: us-east-1
-        version_label: ${{ github.sha }}
-        use_existing_version_if_available: true
-        deployment_package: deploy.zip
->>>>>>> parent of e74e09c (all green but not from main)
+        
+      - name: Deploy 2 EB
+        uses: einaregilsson/beanstalk-deploy@v18
+        with:
+            aws_access_key: ${{ secrets.AWS_ACCESS_KEY }}
+            aws_secret_key: ${{ secrets.AWS_SECRET_KEY }}
+            application_name: react-app
+            environment_name: React-app-env
+            existing_bucket_name: ${{ secrets.ASS3_BUCKET }}
+            region: us-east-1
+            version_label: ${{ github.sha }}
+            use_existing_version_if_available: true
+            deployment_package: deploy.zip

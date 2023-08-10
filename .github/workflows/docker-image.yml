@@ -8,6 +8,7 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
+    - run: docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
     - run: docker build . --file Dockerfile.dev --tag asheer/node-uat-testing:latest
     - run: docker run -e CI=true  asheer/node-uat-testing:latest npm run test -- --coverage
 
@@ -16,5 +17,22 @@ jobs:
       with:
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_PASSWORD }}  
-    - name: Docker Push
-      run: docker push ${{secrets.DOCKER_USERNAME}}/node-uat-testing
+    - name: Generate deployment package
+      run: zip -r deploy.zip . -x '*.git*'
+    # - name: Docker Push
+    #   run: docker push ${{secrets.DOCKER_USERNAME}}/node-uat-testing
+
+
+    
+    - name: Deploy 2 EB
+      uses: einaregilsson/beanstalk-deploy@v18
+      with:
+        aws_access_key: ${{ secrets.AWS_ACCESS_KEY }}
+        aws_secret_key: ${{ secrets.AWS_SECRET_KEY }}
+        application_name: react-app
+        environment_name: React-app-env
+        existing_bucket_name: ${{ secrets.ASS3_BUCKET }}
+        region: us-east-1
+        version_label: ${{ github.sha }}
+        use_existing_version_if_available: true
+        deployment_package: deploy.zip
